@@ -1,15 +1,15 @@
 <script>
-    import AudioAnalyzer from '$lib/AudioAnalyzer.svelte';
+	import AudioAnalyzer from '$lib/AudioAnalyzer.svelte';
 </script>
 
 <main>
-    <h1>Simple Audio Analyzer</h1>
-    <AudioAnalyzer />
+	<h1>Simple Audio Analyzer</h1>
+	<AudioAnalyzer />
 </main>
 
 <style>
-    main {
-        text-align: center;
-        padding: 1em;
-    }
+	main {
+		text-align: center;
+		padding: 1em;
+	}
 </style>
