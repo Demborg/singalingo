@@ -1,2 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+    import AudioAnalyzer from '$lib/AudioAnalyzer.svelte';
+</script>
+
+<main>
+    <h1>Simple Audio Analyzer</h1>
+    <AudioAnalyzer />
+</main>
+
+<style>
+    main {
+        text-align: center;
+        padding: 1em;
+    }
+</style>
