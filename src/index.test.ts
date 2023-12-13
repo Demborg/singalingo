@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 
-describe('sum test', () => {
-	it('adds 1 + 2 to equal 3', () => {
-		expect(1 + 2).toBe(3);
+import { frequencyToNoteName } from '$lib/toneTools';
+
+describe('Frequency to tone test', () => {
+	it('tests C#4', () => {
+		expect(frequencyToNoteName(440)).toBe("C#4");
 	});
 });
