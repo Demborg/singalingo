@@ -1,3 +1,20 @@
+function frequencyToNoteName(frequency) {
+    const A4 = 440;
+    const A4_INDEX = 49; // A4 is the 49th key on the piano
+    const SEMITONES_IN_OCTAVE = 12;
+
+    let n = SEMITONES_IN_OCTAVE * Math.log2(frequency / A4);
+    n = Math.round(n); // Round to nearest semitone
+
+    const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+    // Calculate the note index and octave
+    const noteIndex = (A4_INDEX + n) % SEMITONES_IN_OCTAVE;
+    const octave = Math.floor((A4_INDEX + n) / SEMITONES_IN_OCTAVE);
+
+    return noteNames[noteIndex] + octave;
+}
+
 document.getElementById('startButton').addEventListener('click', async () => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -12,6 +29,12 @@ document.getElementById('startButton').addEventListener('click', async () => {
         const dataArray = new Uint8Array(bufferLength);
         const frequencyLabel = document.createElement('p');
         document.body.appendChild(frequencyLabel);
+
+        // Define the frequency range for human voice
+        const minFreq = 80; // 80 Hz
+        const maxFreq = 1100; // 1100 Hz
+        const minIndex = Math.floor(minFreq / (audioContext.sampleRate / analyser.fftSize));
+        const maxIndex = Math.ceil(maxFreq / (audioContext.sampleRate / analyser.fftSize));
 
         function draw() {
             requestAnimationFrame(draw);
@@ -29,16 +52,16 @@ document.getElementById('startButton').addEventListener('click', async () => {
             let maxAmplitude = -Infinity;
             let dominantFrequencyIndex = 0;
 
-            for(let i = 0; i < bufferLength; i++) {
+            for(let i = minIndex; i <= maxIndex; i++) {
                 if (dataArray[i] > maxAmplitude) {
                     maxAmplitude = dataArray[i];
                     dominantFrequencyIndex = i;
                 }
 
                 const y = (1 - dataArray[i] / 255) * canvas.height;
-                const x = (i / bufferLength) * canvas.width;
+                const x = ((i - minIndex) / (maxIndex - minIndex)) * canvas.width;
 
-                if (i === 0) {
+                if (i === minIndex) {
                     canvasContext.moveTo(x, y);
                 } else {
                     canvasContext.lineTo(x, y);
@@ -49,7 +72,7 @@ document.getElementById('startButton').addEventListener('click', async () => {
             canvasContext.stroke();
 
             const dominantFrequency = dominantFrequencyIndex * audioContext.sampleRate / analyser.fftSize;
-            frequencyLabel.textContent = `Dominant Frequency: ${dominantFrequency.toFixed(2)} Hz`;
+            frequencyLabel.textContent = `Dominant Frequency: ${dominantFrequency.toFixed(2)} Hz ${frequencyToNoteName(dominantFrequency)}`;
         }
 
         draw();
