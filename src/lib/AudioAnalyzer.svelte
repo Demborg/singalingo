@@ -68,10 +68,6 @@
 		}
 	}
 
-	function stopAudio(): void {
-		audioContext.close();
-	}
-
 	function draw(): void {
 		requestAnimationFrame(draw);
 		analyser.getByteFrequencyData(dataArray);
@@ -99,7 +95,6 @@
 <AudioVisualizer {dataArray} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
-	<button on:click={stopAudio}>Stop Microphone Input</button>
 	<button on:click={increment}> Next note</button>
 </div>
 <Notation
