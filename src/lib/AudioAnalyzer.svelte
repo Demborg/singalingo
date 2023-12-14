@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { frequencyToNoteName, noteNameToFrequency } from './toneTools';
+	import { frequencyToNoteName, noteNameToFrequency, findPeaks, smoothArray} from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 
@@ -11,11 +11,15 @@
 	const notes = ['c/4', 'c/5', 'a/4', 'g/4'];
 	let current_note_index = 0;
 
-	let isFrequencyClose = (a: number, b: number) => {
+	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
 		const min_f = Math.min(a, b);
 
 		return max_f / min_f < 1.03;
+	};
+
+	const indexToFrequency = (index: number) => {
+		return (index * audioContext.sampleRate) / analyser.fftSize;
 	};
 
 	onMount(() => {
@@ -28,6 +32,7 @@
 			return
 		}
 		window.alert('You won!');
+		current_note_index = 0;
 	};
 
 	async function initAudio(): Promise<void> {
@@ -41,6 +46,7 @@
 			analyser = audioContext.createAnalyser();
 			source.connect(analyser);
 			analyser.fftSize = 2048;
+			analyser.smoothingTimeConstant = 0.8;
 			const bufferLength = analyser.frequencyBinCount;
 			dataArray = new Uint8Array(bufferLength);
 			draw();
@@ -49,13 +55,19 @@
 		}
 	}
 
+	function stopAudio(): void {
+		audioContext.close();
+	}
+
 	function draw(): void {
 		requestAnimationFrame(draw);
 		analyser.getByteFrequencyData(dataArray);
-		dataArray = dataArray;
-
+		dataArray = smoothArray(dataArray);
+		dataArray = smoothArray(dataArray);
+		dataArray = smoothArray(dataArray);
+		
 		const dominantFrequencyIndex = dataArray.indexOf(Math.max(...dataArray));
-		dominantFrequency = (dominantFrequencyIndex * audioContext.sampleRate) / analyser.fftSize;
+		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
 
 		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
 			increment();
@@ -64,6 +76,7 @@
 </script>
 
 <button on:click={initAudio}>Start Microphone Input</button>
+<button on:click={stopAudio}>Stop Microphone Input</button>
 <button on:click={increment}>
 	Next note</button>
 <AudioVisualizer {dataArray} />

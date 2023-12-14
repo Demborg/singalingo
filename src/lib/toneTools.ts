@@ -23,3 +23,24 @@ export function noteNameToFrequency(noteName: string): number {
 	const frequency = A4 * Math.pow(2, (n - A4_INDEX) / SEMITONES_IN_OCTAVE);
 	return frequency;
 }
+
+export function smoothArray(dataArray: Uint8Array): Uint8Array {
+    let smoothedArray = new Uint8Array(dataArray.length);
+    for (let i = 1; i < dataArray.length - 1; i++) {
+        smoothedArray[i] = (dataArray[i - 1] + dataArray[i] + dataArray[i + 1]) / 3;
+    }
+    smoothedArray[0] = dataArray[0];
+    smoothedArray[dataArray.length - 1] = dataArray[dataArray.length - 1];
+    return smoothedArray;
+}
+
+export function findPeaks(dataArray: Uint8Array, threshold: number): number[] {
+    let peaks = [];
+
+    for (let i = 1; i < dataArray.length - 1; i++) {
+        if (dataArray[i] > dataArray[i - 1] && dataArray[i] > dataArray[i + 1] && dataArray[i] >= threshold) {
+            peaks.push(i);
+        }
+    }
+    return peaks;
+}
