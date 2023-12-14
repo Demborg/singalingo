@@ -31,6 +31,11 @@
 		return (index * audioContext.sampleRate) / analyser.fftSize;
 	};
 
+	const restart = (): void => {
+		level = 0;
+		current_note_index = 0;
+	};
+
 	function increment(): void {
 		if (current_note_index < levels[level].length - 1) {
 			current_note_index += 1;
@@ -44,8 +49,7 @@
 			return;
 		}
 		window.alert('You have completed the game!');
-		level = 0;
-		current_note_index = 0;
+		restart();
 	}
 
 	async function initAudio(): Promise<void> {
@@ -95,6 +99,7 @@
 <AudioVisualizer {dataArray} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
+	<button on:click={restart}>Restart</button>
 	<button on:click={increment}> Next note</button>
 </div>
 <Notation
