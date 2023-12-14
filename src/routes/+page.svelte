@@ -2,8 +2,12 @@
 	import AudioAnalyzer from '$lib/AudioAnalyzer.svelte';
 </script>
 
+<svelte:head>
+	<title>Singalingo</title>
+</svelte:head>
+
 <main>
-	<h1>Simple Audio Analyzer</h1>
+	<h1>Singalingo</h1>
 	<AudioAnalyzer />
 </main>
 
