@@ -9,7 +9,14 @@
 	let dataArray: Uint8Array;
 	let dominantFrequency: number = 0;
 	const notes = ['c/4', 'c/5', 'a/4', 'g/4'];
-	let current_note_index = 2;
+	let current_note_index = 0;
+
+	let isFrequencyClose = (a: number, b: number) => {
+		const max_f = Math.max(a, b);
+		const min_f = Math.min(a, b);
+
+		return max_f / min_f < 1.03;
+	};
 
 	onMount(() => {
 		// Deferred initialization to ensure user gesture
@@ -41,10 +48,15 @@
 
 		const dominantFrequencyIndex = dataArray.indexOf(Math.max(...dataArray));
 		dominantFrequency = (dominantFrequencyIndex * audioContext.sampleRate) / analyser.fftSize;
+
+		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
+			current_note_index = current_note_index + 1;
+		}
 	}
 </script>
 
 <button on:click={initAudio}>Start Microphone Input</button>
 <AudioVisualizer {dataArray} />
 <p>Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}</p>
+<p>We are aiming at {noteNameToFrequency(notes[current_note_index])} which is called {notes[current_note_index]}</p>
 <Notation {notes} currentNoteIndex={current_note_index} />
