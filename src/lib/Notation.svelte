@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
-	import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
+	import { Renderer, Stave, StaveNote, Voice, Formatter, Accidental } from 'vexflow';
 
 	export let notes: string[];
 	export let currentNoteIndex: number;
+    export let currentNote: string;
 
 	const renderNote = (note: string) => {
-		return new StaveNote({
+		let result = new StaveNote({
 			keys: [note],
 			duration: 'q'
 		});
+
+        if (note.includes("#")) {
+            result.addModifier(new Accidental("#"));
+        }
+        return result;
 	};
 
 	afterUpdate(() => {
@@ -36,16 +42,30 @@
 			rendered_notes[i].setStyle({ fillStyle: 'green' });
 		}
 
-		// Create a voice in 4/4 and add above notes
-		const voice = new Voice({ num_beats: notes.length, beat_value: 4 });
-		voice.addTickables(rendered_notes);
+        let rendered_current_note = notes.map((note, index) => {
+            if (index === currentNoteIndex) {
+                let rendered_note = renderNote(currentNote);
+                rendered_note.setStyle({ fillStyle: 'blue' });
+                return rendered_note;
+            }
+            let rendered_note = renderNote(note);
+            if (index < currentNoteIndex) {
+                rendered_note.setStyle({ fillStyle: 'green' });
+            }
+            return rendered_note;
+        })
+
+        const voices = [
+            new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_notes),
+            new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_current_note)
+        ]
 
 		// Format and justify the notes to 400 pixels.
-		new Formatter().joinVoices([voice]).format([voice], 350);
+		new Formatter().joinVoices(voices).format(voices, 350);
 
 		// Render voice
 		stave.setContext(context).draw();
-		voice.draw(context, stave);
+		voices.forEach(v => v.draw(context, stave));
 	});
 </script>
 

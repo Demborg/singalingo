@@ -4,6 +4,9 @@ const SEMITONES_IN_OCTAVE = 12;
 const NOTE_NAMES = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
 
 export function frequencyToNoteName(frequency: number): string {
+	if (frequency <= 0) {
+		return 'a/4';
+	}
 	let n = SEMITONES_IN_OCTAVE * Math.log2(frequency / A4) + A4_INDEX;
 	n = Math.round(n) + 8; // Round to nearest semitone
 
