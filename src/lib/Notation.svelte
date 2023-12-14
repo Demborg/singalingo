@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
-	import { Renderer, Stave, StaveNote, Voice, Formatter, Accidental } from 'vexflow';
+	import { Renderer, Stave, StaveNote, Voice, Formatter, Accidental, Stem, Beam } from 'vexflow';
 
 	export let notes: string[];
 	export let currentNoteIndex: number;
     export let currentNote: string;
 
-	const renderNote = (note: string) => {
+	const renderNote = (note: string, stave: bool = true): StaveNote => {
 		let result = new StaveNote({
 			keys: [note],
 			duration: 'q'
@@ -15,6 +15,11 @@
         if (note.includes("#")) {
             result.addModifier(new Accidental("#"));
         }
+
+        if (!stave) {
+            result.setStave(new Stave());
+        }
+
         return result;
 	};
 
@@ -44,11 +49,11 @@
 
         let rendered_current_note = notes.map((note, index) => {
             if (index === currentNoteIndex) {
-                let rendered_note = renderNote(currentNote);
+                let rendered_note = renderNote(currentNote, false);
                 rendered_note.setStyle({ fillStyle: 'blue' });
                 return rendered_note;
             }
-            let rendered_note = renderNote(note);
+            let rendered_note = renderNote(note, false);
             if (index < currentNoteIndex) {
                 rendered_note.setStyle({ fillStyle: 'green' });
             }
