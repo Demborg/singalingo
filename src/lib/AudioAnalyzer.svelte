@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { frequencyToNoteName } from './toneTools';
+	import Notation from './Notation.svelte';
 
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
 	let dataArray: Uint8Array;
 	let dominantFrequency: number = 0;
+	const notes = ['c/4', 'c/5', 'a/4', 'g/4'];
+	let current_note_index = 2;
 
 	onMount(() => {
 		// Deferred initialization to ensure user gesture
@@ -78,3 +81,4 @@
 <canvas id="visualizer" width="640" height="100"></canvas>
 <p>Dominant Frequency: {dominantFrequency.toFixed(2)} Hz</p>
 <p>Note: {frequencyToNoteName(dominantFrequency)}</p>
+<Notation {notes} currentNoteIndex={current_note_index} />
