@@ -96,6 +96,7 @@
 		}
 	}
 </script>
+<p>Enable the microphone and hit the notes the win!</p>
 <AudioVisualizer {dataArray} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
