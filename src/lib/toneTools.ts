@@ -14,3 +14,13 @@ export function frequencyToNoteName(frequency: number): string {
 
 	return NOTE_NAMES[noteIndex] + "/" + octave;
 }
+
+export function noteNameToFrequency(noteName: string): number {
+	const parts = noteName.split('/');
+	const note = parts[0].toLowerCase();
+	const noteIndex = NOTE_NAMES.indexOf(note[0]);
+	const octave = parseInt(parts[1]);
+
+	const n = 4 * SEMITONES_IN_OCTAVE + noteIndex + 1;
+	return A4 * Math.pow(2, (n - A4_INDEX) / SEMITONES_IN_OCTAVE);
+}
