@@ -50,7 +50,7 @@
 		dominantFrequency = (dominantFrequencyIndex * audioContext.sampleRate) / analyser.fftSize;
 
 		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
-			current_note_index = current_note_index + 1;
+			current_note_index = (current_note_index + 1) % notes.length;
 		}
 	}
 </script>
