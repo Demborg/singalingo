@@ -80,7 +80,7 @@
 			isFrequencyClose(dominantFrequency, noteNameToFrequency(levels[level][current_note_index]))
 		) {
 			if (timer_id === null) {
-				timer_id = setTimeout(increment, 500);
+				timer_id = setTimeout(increment, 250);
 			}
 		} else {
 			if (timer_id !== null) {
@@ -90,20 +90,12 @@
 		}
 	}
 </script>
-
-<button on:click={initAudio}>Start Microphone Input</button>
-<button on:click={stopAudio}>Stop Microphone Input</button>
-<button on:click={increment}> Next note</button>
 <AudioVisualizer {dataArray} />
-<p>
-	Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}
-</p>
-<p>
-	We are aiming at {noteNameToFrequency(levels[level][current_note_index])} which is called {levels[
-		level
-	][current_note_index]}
-</p>
-<p>We are at note {current_note_index}</p>
+<div>
+	<button on:click={initAudio}>Start Microphone Input</button>
+	<button on:click={stopAudio}>Stop Microphone Input</button>
+	<button on:click={increment}> Next note</button>
+</div>
 <Notation
 	notes={levels[level]}
 	currentNoteIndex={current_note_index}
