@@ -44,6 +44,8 @@
 			return;
 		}
 		window.alert('You have completed the game!');
+		level = 0;
+		current_note_index = 0;
 	}
 
 	async function initAudio(): Promise<void> {
