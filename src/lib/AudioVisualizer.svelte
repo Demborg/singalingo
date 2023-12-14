@@ -34,4 +34,11 @@
 	});
 </script>
 
-<canvas id="visualizer" width="640" height="100"></canvas>
+<canvas id="visualizer" width="640" height="100" class="visualizer"></canvas>
+
+<style>
+	.visualizer {
+		width: 100%;
+		max-width: 500px;
+	}
+</style>
