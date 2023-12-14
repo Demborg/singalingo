@@ -4,7 +4,7 @@
 
 	export let notes: string[];
 	export let currentNoteIndex: number;
-    export let currentNote: string;
+	export let currentNote: string;
 
 	const renderNote = (note: string, stave: bool = true): StaveNote => {
 		let result = new StaveNote({
@@ -12,22 +12,22 @@
 			duration: 'q'
 		});
 
-        if (note.includes("#")) {
-            result.addModifier(new Accidental("#"));
-        }
+		if (note.includes('#')) {
+			result.addModifier(new Accidental('#'));
+		}
 
-        if (!stave) {
-            result.setStave(new Stave());
-        }
+		if (!stave) {
+			result.setStave(new Stave());
+		}
 
-        return result;
+		return result;
 	};
 
 	afterUpdate(() => {
 		// Create an SVG renderer and attach it to the DIV element with id="output".
 		const div = document.getElementById('notes') as HTMLDivElement | null;
 		if (!div) return;
-        div.innerHTML = ''
+		div.innerHTML = '';
 		const renderer = new Renderer(div, Renderer.Backends.SVG);
 
 		// Configure the rendering context.
@@ -41,36 +41,35 @@
 		// Add a clef and time signature.
 		stave.addClef('treble').addTimeSignature('4/4');
 
-
 		let rendered_notes = notes.map(renderNote);
 		for (let i = 0; i < currentNoteIndex; i++) {
 			rendered_notes[i].setStyle({ fillStyle: 'green' });
 		}
 
-        let rendered_current_note = notes.map((note, index) => {
-            if (index === currentNoteIndex) {
-                let rendered_note = renderNote(currentNote, false);
-                rendered_note.setStyle({ fillStyle: 'blue' });
-                return rendered_note;
-            }
-            let rendered_note = renderNote(note, false);
-            if (index < currentNoteIndex) {
-                rendered_note.setStyle({ fillStyle: 'green' });
-            }
-            return rendered_note;
-        })
+		let rendered_current_note = notes.map((note, index) => {
+			if (index === currentNoteIndex) {
+				let rendered_note = renderNote(currentNote, false);
+				rendered_note.setStyle({ fillStyle: 'blue' });
+				return rendered_note;
+			}
+			let rendered_note = renderNote(note, false);
+			if (index < currentNoteIndex) {
+				rendered_note.setStyle({ fillStyle: 'green' });
+			}
+			return rendered_note;
+		});
 
-        const voices = [
-            new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_notes),
-            new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_current_note)
-        ]
+		const voices = [
+			new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_notes),
+			new Voice({ num_beats: 4, beat_value: 4 }).addTickables(rendered_current_note)
+		];
 
 		// Format and justify the notes to 400 pixels.
 		new Formatter().joinVoices(voices).format(voices, 350);
 
 		// Render voice
 		stave.setContext(context).draw();
-		voices.forEach(v => v.draw(context, stave));
+		voices.forEach((v) => v.draw(context, stave));
 	});
 </script>
 

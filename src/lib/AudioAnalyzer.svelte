@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { frequencyToNoteName, noteNameToFrequency, findPeaks, smoothArray} from './toneTools';
+	import { beforeUpdate, onMount } from 'svelte';
+	import { frequencyToNoteName, noteNameToFrequency, findPeaks, smoothArray } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 
@@ -8,7 +8,11 @@
 	let analyser: AnalyserNode;
 	let dataArray: Uint8Array;
 	let dominantFrequency: number = 0;
-	const notes = ['c/4', 'c/5', 'a/4', 'g/4'];
+	const levels = [
+		['c/4', 'c/5', 'a/4', 'g/4'],
+		['d/4', 'c#/5', 'a#/4', 'a#/4']
+	];
+	let level = 0;
 	let current_note_index = 0;
 	let timer_id: NodeJS.Timeout | null = null;
 
@@ -16,25 +20,27 @@
 		const max_f = Math.max(a, b);
 		const min_f = Math.min(a, b);
 
-		return max_f / min_f < 1.03;
+		return max_f / min_f < 1.06;
 	};
 
 	const indexToFrequency = (index: number) => {
 		return (index * audioContext.sampleRate) / analyser.fftSize;
 	};
 
-	onMount(() => {
-		// Deferred initialization to ensure user gesture
-	});
-
 	function increment(): void {
-		if (current_note_index < notes.length - 1) {
+		if (current_note_index < levels[level].length - 1) {
 			current_note_index += 1;
-			return
+			return;
 		}
-		window.alert('You won!');
-		current_note_index = 0;
-	};
+
+		if (level < levels.length - 1) {
+			window.alert('You have completed the level!');
+			level += 1;
+			current_note_index = 0;
+			return;
+		}
+		window.alert('You have completed the game!');
+	}
 
 	async function initAudio(): Promise<void> {
 		try {
@@ -66,16 +72,17 @@
 		dataArray = smoothArray(dataArray);
 		dataArray = smoothArray(dataArray);
 		dataArray = smoothArray(dataArray);
-		
+
 		const dominantFrequencyIndex = dataArray.indexOf(Math.max(...dataArray));
 		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
 
-		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
+		if (
+			isFrequencyClose(dominantFrequency, noteNameToFrequency(levels[level][current_note_index]))
+		) {
 			if (timer_id === null) {
 				timer_id = setTimeout(increment, 500);
 			}
-		}
-		else {
+		} else {
 			if (timer_id !== null) {
 				clearTimeout(timer_id);
 				timer_id = null;
@@ -86,10 +93,19 @@
 
 <button on:click={initAudio}>Start Microphone Input</button>
 <button on:click={stopAudio}>Stop Microphone Input</button>
-<button on:click={increment}>
-	Next note</button>
+<button on:click={increment}> Next note</button>
 <AudioVisualizer {dataArray} />
-<p>Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}</p>
-<p>We are aiming at {noteNameToFrequency(notes[current_note_index])} which is called {notes[current_note_index]}</p>
+<p>
+	Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}
+</p>
+<p>
+	We are aiming at {noteNameToFrequency(levels[level][current_note_index])} which is called {levels[
+		level
+	][current_note_index]}
+</p>
 <p>We are at note {current_note_index}</p>
-<Notation {notes} currentNoteIndex={current_note_index} currentNote={frequencyToNoteName(dominantFrequency)}/>
+<Notation
+	notes={levels[level]}
+	currentNoteIndex={current_note_index}
+	currentNote={frequencyToNoteName(dominantFrequency)}
+/>
