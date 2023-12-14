@@ -10,6 +10,7 @@
 	let dominantFrequency: number = 0;
 	const notes = ['c/4', 'c/5', 'a/4', 'g/4'];
 	let current_note_index = 0;
+	let timer_id: NodeJS.Timeout | null = null;
 
 	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
@@ -26,7 +27,7 @@
 		// Deferred initialization to ensure user gesture
 	});
 
-	const increment = () => {
+	function increment(): void {
 		if (current_note_index < notes.length - 1) {
 			current_note_index += 1;
 			return
@@ -70,7 +71,15 @@
 		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
 
 		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
-			increment();
+			if (timer_id === null) {
+				timer_id = setTimeout(increment, 500);
+			}
+		}
+		else {
+			if (timer_id !== null) {
+				clearTimeout(timer_id);
+				timer_id = null;
+			}
 		}
 	}
 </script>
