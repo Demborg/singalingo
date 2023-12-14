@@ -22,6 +22,14 @@
 		// Deferred initialization to ensure user gesture
 	});
 
+	const increment = () => {
+		if (current_note_index < notes.length - 1) {
+			current_note_index += 1;
+			return
+		}
+		window.alert('You won!');
+	};
+
 	async function initAudio(): Promise<void> {
 		try {
 			const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
@@ -50,13 +58,13 @@
 		dominantFrequency = (dominantFrequencyIndex * audioContext.sampleRate) / analyser.fftSize;
 
 		if (isFrequencyClose(dominantFrequency, noteNameToFrequency(notes[current_note_index]))) {
-			current_note_index = (current_note_index + 1) % notes.length;
+			increment();
 		}
 	}
 </script>
 
 <button on:click={initAudio}>Start Microphone Input</button>
-<button on:click={() => (current_note_index = (current_note_index + 1) % notes.length)}>
+<button on:click={increment}>
 	Next note</button>
 <AudioVisualizer {dataArray} />
 <p>Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}</p>
