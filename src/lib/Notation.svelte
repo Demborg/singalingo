@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate } from 'svelte';
 	import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
 	export let notes: string[];
@@ -12,7 +12,7 @@
 		});
 	};
 
-	onMount(() => {
+	afterUpdate(() => {
 		// Create an SVG renderer and attach it to the DIV element with id="output".
 		const div = document.getElementById('notes') as HTMLDivElement | null;
 		if (!div) return;
