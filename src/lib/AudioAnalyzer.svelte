@@ -56,7 +56,10 @@
 </script>
 
 <button on:click={initAudio}>Start Microphone Input</button>
+<button on:click={() => (current_note_index = (current_note_index + 1) % notes.length)}>
+	Next note</button>
 <AudioVisualizer {dataArray} />
 <p>Dominant frequency {dominantFrequency.toFixed(1)} is note {frequencyToNoteName(dominantFrequency)}</p>
 <p>We are aiming at {noteNameToFrequency(notes[current_note_index])} which is called {notes[current_note_index]}</p>
+<p>We are at note {current_note_index}</p>
 <Notation {notes} currentNoteIndex={current_note_index} />
