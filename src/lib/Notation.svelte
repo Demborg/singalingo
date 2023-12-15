@@ -36,7 +36,7 @@
 		context.setFont('Arial', 10);
 
 		// Create a stave of width 400 at position 10, 40.
-		const stave = new Stave(10, 40, 400);
+		const stave = new Stave(10, 40, 480);
 
 		// Add a clef and time signature.
 		stave.addClef('treble').addTimeSignature('4/4');
@@ -65,11 +65,17 @@
 		];
 
 		// Format and justify the notes to 400 pixels.
-		new Formatter().joinVoices(voices).format(voices, 350);
+		new Formatter().joinVoices(voices).format(voices, 500);
 
 		// Render voice
 		stave.setContext(context).draw();
 		voices.forEach((v) => v.draw(context, stave));
+		div.childNodes.forEach((child) => {
+
+			if (child.nodeName === 'svg') {
+				(child as SVGElement).setAttribute("width", "100%");
+			}
+		});
 	});
 </script>
 
