@@ -14,7 +14,7 @@
 		['c/5', 'b/4', 'a/4', 'g/4'],
 		['f/4', 'e/4', 'd/4', 'c/4'],
 		['c/4', 'e/4', 'g/4', 'c/5'],
-		['c/5', 'g/4', 'e/4', 'c/4'],
+		['c/5', 'g/4', 'e/4', 'c/4']
 	];
 	let level = 0;
 	let current_note_index = 0;
@@ -96,7 +96,8 @@
 		}
 	}
 </script>
-<p>Enable the microphone and hit the notes the win!</p>
+
+<p>Enable the microphone and hit the notes to win!</p>
 <AudioVisualizer {dataArray} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
