@@ -73,6 +73,4 @@
 	});
 </script>
 
-<html>
-	<div id="notes"></div>
-</html>
+<div id="notes"></div>
