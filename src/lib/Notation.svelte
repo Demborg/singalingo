@@ -72,6 +72,7 @@
 		voices.forEach((v) => v.draw(context, stave));
 		div.childNodes.forEach((child) => {
 			if (child.nodeName === 'svg') {
+				(child as SVGElement).setAttribute('style', '');
 				(child as SVGElement).setAttribute('width', '100%');
 			}
 		});
