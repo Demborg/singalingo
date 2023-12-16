@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
 	export let dataArray: Uint8Array;
+	export let indexToFrequency: (index: number) => number;
+	export let minFrequency: number = 100;
+	export let maxFrequency: number = 3000;
 
 	afterUpdate(() => {
 		if (!dataArray) return;
@@ -19,8 +22,14 @@
 		canvasContext.beginPath();
 
 		for (let i = 0; i < dataArray.length; i++) {
+			const frequency = indexToFrequency(i);
+			if (!(minFrequency <= frequency && frequency <= maxFrequency)) {
+				continue;
+			}
 			const y: number = (1 - dataArray[i] / 255) * canvas.height;
-			const x: number = (i / dataArray.length) * canvas.width;
+			const x =
+				(Math.log2(frequency / minFrequency) / Math.log2(maxFrequency / minFrequency)) *
+				canvas.width;
 
 			if (i === 0) {
 				canvasContext.moveTo(x, y);
