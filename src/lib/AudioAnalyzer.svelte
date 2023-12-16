@@ -98,7 +98,7 @@
 </script>
 
 <p>Enable the microphone and hit the notes to win!</p>
-<AudioVisualizer {dataArray} {indexToFrequency} />
+<AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
 	<button on:click={restart}>Restart</button>

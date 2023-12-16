@@ -4,6 +4,11 @@
 	export let indexToFrequency: (index: number) => number;
 	export let minFrequency: number = 100;
 	export let maxFrequency: number = 3000;
+	export let detectedFrequency: number = 300;
+
+	const frequencyToX = (f: number, width: number): number => {
+		return (Math.log2(f / minFrequency) / Math.log2(maxFrequency / minFrequency)) * width;
+	};
 
 	afterUpdate(() => {
 		if (!dataArray) return;
@@ -20,6 +25,8 @@
 		canvasContext.lineWidth = 2;
 		canvasContext.strokeStyle = 'rgb(0, 0, 0)';
 		canvasContext.beginPath();
+		let detectedY: number = 0;
+		let closestF: number = 0;
 
 		for (let i = 0; i < dataArray.length; i++) {
 			const frequency = indexToFrequency(i);
@@ -27,9 +34,11 @@
 				continue;
 			}
 			const y: number = (1 - dataArray[i] / 255) * canvas.height;
-			const x =
-				(Math.log2(frequency / minFrequency) / Math.log2(maxFrequency / minFrequency)) *
-				canvas.width;
+			if (Math.abs(detectedFrequency - closestF) > Math.abs(detectedFrequency - frequency)) {
+				detectedY = y;
+				closestF = frequency;
+			}
+			const x = frequencyToX(frequency, canvas.width);
 
 			if (i === 0) {
 				canvasContext.moveTo(x, y);
@@ -40,6 +49,11 @@
 
 		canvasContext.lineTo(canvas.width, canvas.height / 2);
 		canvasContext.stroke();
+
+		canvasContext.beginPath();
+		canvasContext.arc(frequencyToX(detectedFrequency, canvas.width), detectedY, 5, 0, 2 * Math.PI);
+		canvasContext.fillStyle = 'rgb(0, 0, 0)';
+		canvasContext.fill();
 	});
 </script>
 
