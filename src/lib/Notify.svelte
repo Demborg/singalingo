@@ -22,4 +22,9 @@
 		align-items: center;
 		flex-direction: column;
 	}
+	h2 {
+        color: white;
+        font-size: 2rem;
+		font-family: 'Great Vibes';
+	}
 </style>

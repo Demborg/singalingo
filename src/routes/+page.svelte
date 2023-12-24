@@ -12,8 +12,21 @@
 </main>
 
 <style>
+	@font-face {
+		font-family: 'Great Vibes';
+		src: url('/fonts/GreatVibes-Regular.ttf')
+	}
+	@font-face {
+		font-family: 'Roboto Slab';
+		src: url('/fonts/RobotoSlab-Regular.ttf')
+	}
+
 	main {
 		text-align: center;
-		padding: 1em;
+		font-family: 'Roboto Slab';
+	}
+	h1 {
+		font-size: 3rem;
+		font-family: 'Great Vibes';
 	}
 </style>
