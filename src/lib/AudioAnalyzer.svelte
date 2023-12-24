@@ -3,6 +3,7 @@
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 	import Notify from './Notify.svelte';
+	import Button from './Button.svelte';
 
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
@@ -107,12 +108,12 @@
 		}}
 	/>
 {/if}
-<AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
-<div>
-	<button on:click={initAudio}>Start Microphone Input</button>
-	<button on:click={restart}>Restart</button>
-	<button on:click={increment}> Next note</button>
-</div>
+{#if analyser}
+	<AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
+{:else}
+	<Button onClick={initAudio} text="Enable microphone"/>
+{/if}
+
 <Notation
 	notes={levels[level]}
 	currentNoteIndex={current_note_index}
