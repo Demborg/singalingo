@@ -2,7 +2,7 @@
 	import { frequencyToNoteName, noteNameToFrequency, smoothArray } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
-	import Notify from './Notify.svelte'
+	import Notify from './Notify.svelte';
 
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
@@ -44,12 +44,12 @@
 		}
 
 		if (level < levels.length - 1) {
-			message = "You have completed the level"
+			message = 'You have completed the level';
 			level += 1;
 			current_note_index = 0;
 			return;
 		}
-		message = "You have completed the game!";
+		message = 'You have completed the game!';
 		restart();
 	}
 
@@ -100,7 +100,12 @@
 
 <p>Enable the microphone and hit the notes to win!</p>
 {#if message}
-	<Notify message={message} onComplete={() => {message = null}} />
+	<Notify
+		{message}
+		onComplete={() => {
+			message = null;
+		}}
+	/>
 {/if}
 <AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
 <div>
