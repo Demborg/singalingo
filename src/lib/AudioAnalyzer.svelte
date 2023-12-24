@@ -2,6 +2,7 @@
 	import { frequencyToNoteName, noteNameToFrequency, smoothArray } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
+	import Notify from './Notify.svelte'
 
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
@@ -18,6 +19,7 @@
 	let level = 0;
 	let current_note_index = 0;
 	let timer_id: NodeJS.Timeout | null = null;
+	let message: string | null = null;
 
 	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
@@ -42,12 +44,12 @@
 		}
 
 		if (level < levels.length - 1) {
-			window.alert('You have completed the level!');
+			message = "You have completed the level"
 			level += 1;
 			current_note_index = 0;
 			return;
 		}
-		window.alert('You have completed the game!');
+		message = "You have completed the game!";
 		restart();
 	}
 
@@ -97,6 +99,9 @@
 </script>
 
 <p>Enable the microphone and hit the notes to win!</p>
+{#if message}
+	<Notify message={message} onComplete={() => {message = null}} />
+{/if}
 <AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
 <div>
 	<button on:click={initAudio}>Start Microphone Input</button>
