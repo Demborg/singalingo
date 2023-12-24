@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { beforeUpdate, onMount } from 'svelte';
-	import { frequencyToNoteName, noteNameToFrequency, findPeaks, smoothArray } from './toneTools';
+	import { frequencyToNoteName, noteNameToFrequency, smoothArray } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 
