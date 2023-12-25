@@ -86,7 +86,6 @@
 		const medianIntensity = median(dataArray);
 		minIntensity = medianIntensity;
 		maxIntensity = Math.max(...dataArray);
-		console.log(Math.pow(2, minIntensity), Math.pow(2, maxIntensity));
 		if (maxIntensity - minIntensity < Math.log2(10000000)) {
 			dominantFrequency = null;
 			return;
@@ -109,7 +108,6 @@
 	}
 </script>
 
-<p>Enable the microphone and hit the notes to win!</p>
 {#if message}
 	<Notify
 		{message}
@@ -135,3 +133,4 @@
 	currentNoteIndex={current_note_index}
 	currentNote={frequencyToNoteName(dominantFrequency)}
 />
+<p>Enable the microphone and hit the notes to win!</p>
