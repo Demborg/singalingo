@@ -1,11 +1,13 @@
 <script lang="ts">
+	import Button from './Button.svelte';
+
 	export let message: string;
 	export let onComplete: () => void;
 </script>
 
 <notice>
 	<h2>{message}</h2>
-	<button on:click={onComplete}>Continue</button>
+	<Button onClick={onComplete} text="Continue" bgColor="black" fgColor="white" />
 </notice>
 
 <style>
