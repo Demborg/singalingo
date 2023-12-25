@@ -14,11 +14,11 @@
 <style>
 	@font-face {
 		font-family: 'Great Vibes';
-		src: url('/fonts/GreatVibes-Regular.ttf')
+		src: url('/fonts/GreatVibes-Regular.ttf');
 	}
 	@font-face {
 		font-family: 'Roboto Slab';
-		src: url('/fonts/RobotoSlab-Regular.ttf')
+		src: url('/fonts/RobotoSlab-Regular.ttf');
 	}
 
 	main {

@@ -4,7 +4,7 @@
 
 	export let notes: string[];
 	export let currentNoteIndex: number;
-	export let currentNote: string;
+	export let currentNote: string | null;
 
 	const renderNote = (note: string, stave: bool = true): StaveNote => {
 		let result = new StaveNote({
@@ -47,7 +47,7 @@
 		}
 
 		let rendered_current_note = notes.map((note, index) => {
-			if (index === currentNoteIndex) {
+			if (index === currentNoteIndex && currentNote) {
 				let rendered_note = renderNote(currentNote, false);
 				rendered_note.setStyle({ fillStyle: 'blue' });
 				return rendered_note;

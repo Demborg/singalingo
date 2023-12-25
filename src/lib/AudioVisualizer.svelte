@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
-	export let dataArray: Uint8Array;
+	export let dataArray: Float32Array;
 	export let indexToFrequency: (index: number) => number;
 	export let minFrequency: number = 100;
 	export let maxFrequency: number = 3000;
-	export let detectedFrequency: number = 300;
+	export let detectedFrequency: number | null = null;
+	export let minIntensity: number;
+	export let maxIntensity: number;
 
 	const frequencyToX = (f: number, width: number): number => {
 		return (Math.log2(f / minFrequency) / Math.log2(maxFrequency / minFrequency)) * width;
@@ -33,8 +35,12 @@
 			if (!(minFrequency <= frequency && frequency <= maxFrequency)) {
 				continue;
 			}
-			const y: number = (1 - dataArray[i] / 255) * canvas.height;
-			if (Math.abs(detectedFrequency - closestF) > Math.abs(detectedFrequency - frequency)) {
+			const y: number =
+				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) * canvas.height;
+			if (
+				detectedFrequency &&
+				Math.abs(detectedFrequency - closestF) > Math.abs(detectedFrequency - frequency)
+			) {
 				detectedY = y;
 				closestF = frequency;
 			}
@@ -51,7 +57,15 @@
 		canvasContext.stroke();
 
 		canvasContext.beginPath();
-		canvasContext.arc(frequencyToX(detectedFrequency, canvas.width), detectedY, 5, 0, 2 * Math.PI);
+		if (detectedFrequency) {
+			canvasContext.arc(
+				frequencyToX(detectedFrequency, canvas.width),
+				detectedY,
+				5,
+				0,
+				2 * Math.PI
+			);
+		}
 		canvasContext.fillStyle = 'rgb(0, 0, 0)';
 		canvasContext.fill();
 	});

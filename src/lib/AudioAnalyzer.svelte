@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { frequencyToNoteName, noteNameToFrequency, smoothArray } from './toneTools';
+	import { frequencyToNoteName, noteNameToFrequency, median } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 	import Notify from './Notify.svelte';
@@ -7,8 +7,8 @@
 
 	let audioContext: AudioContext;
 	let analyser: AnalyserNode;
-	let dataArray: Uint8Array;
-	let dominantFrequency: number = 0;
+	let dataArray: Float32Array;
+	let dominantFrequency: number | null = null;
 	const levels = [
 		['c/4', 'd/4', 'e/4', 'f/4'],
 		['g/4', 'a/4', 'b/4', 'c/5'],
@@ -21,6 +21,8 @@
 	let current_note_index = 0;
 	let timer_id: NodeJS.Timeout | null = null;
 	let message: string | null = null;
+	let minIntensity: number = 0;
+	let maxIntensity: number = 100;
 
 	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
@@ -67,7 +69,7 @@
 			analyser.fftSize = 2048;
 			analyser.smoothingTimeConstant = 0.8;
 			const bufferLength = analyser.frequencyBinCount;
-			dataArray = new Uint8Array(bufferLength);
+			dataArray = new Float32Array(bufferLength);
 			draw();
 		} catch (err) {
 			console.error('Error accessing audio stream:', err);
@@ -76,12 +78,20 @@
 
 	function draw(): void {
 		requestAnimationFrame(draw);
-		analyser.getByteFrequencyData(dataArray);
-		dataArray = smoothArray(dataArray);
-		dataArray = smoothArray(dataArray);
-		dataArray = smoothArray(dataArray);
-
-		const dominantFrequencyIndex = dataArray.indexOf(Math.max(...dataArray));
+		analyser.getFloatFrequencyData(dataArray);
+		dataArray = dataArray;
+		// dataArray = smoothArray(dataArray);
+		// dataArray = smoothArray(dataArray);
+		// dataArray = smoothArray(dataArray);
+		const medianIntensity = median(dataArray);
+		minIntensity = medianIntensity;
+		maxIntensity = Math.max(...dataArray);
+		console.log(Math.pow(2, minIntensity), Math.pow(2, maxIntensity));
+		if (maxIntensity - minIntensity < Math.log2(10000000)) {
+			dominantFrequency = null;
+			return;
+		}
+		const dominantFrequencyIndex = dataArray.indexOf(maxIntensity);
 		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
 
 		if (
@@ -109,9 +119,15 @@
 	/>
 {/if}
 {#if analyser}
-	<AudioVisualizer {dataArray} {indexToFrequency} detectedFrequency={dominantFrequency} />
+	<AudioVisualizer
+		{dataArray}
+		{indexToFrequency}
+		detectedFrequency={dominantFrequency}
+		{minIntensity}
+		{maxIntensity}
+	/>
 {:else}
-	<Button onClick={initAudio} text="Enable microphone"/>
+	<Button onClick={initAudio} text="Enable microphone" />
 {/if}
 
 <Notation
