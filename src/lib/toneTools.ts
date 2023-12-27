@@ -56,3 +56,14 @@ export function median(dataArray: Float32Array): number {
 	const sortedValues = [...dataArray].sort((a, b) => a - b);
 	return sortedValues[Math.floor(dataArray.length / 2)];
 }
+
+export function harmonicProductSpectrum(dataArray: Float32Array, harmonics: number = 5): Float32Array {
+	let harmonicSpectra = new Float32Array(dataArray.length);
+
+	for (let i = 0; i < dataArray.length; i++) {
+		for (let j = 1; j <= harmonics && i * j < dataArray.length; j++) {
+			harmonicSpectra[i] += dataArray[i * j];
+		}
+	}
+	return harmonicSpectra
+}

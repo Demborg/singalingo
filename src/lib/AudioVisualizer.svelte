@@ -2,8 +2,8 @@
 	import { afterUpdate } from 'svelte';
 	export let dataArray: Float32Array;
 	export let indexToFrequency: (index: number) => number;
-	export let minFrequency: number = 100;
-	export let maxFrequency: number = 3000;
+	export let minFrequency: number;
+	export let maxFrequency: number;
 	export let detectedFrequency: number | null = null;
 	export let minIntensity: number;
 	export let maxIntensity: number;
@@ -32,9 +32,6 @@
 
 		for (let i = 0; i < dataArray.length; i++) {
 			const frequency = indexToFrequency(i);
-			if (!(minFrequency <= frequency && frequency <= maxFrequency)) {
-				continue;
-			}
 			const y: number =
 				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) * canvas.height;
 			if (

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { frequencyToNoteName, noteNameToFrequency, median } from './toneTools';
+	import { frequencyToNoteName, noteNameToFrequency, median, harmonicProductSpectrum } from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 	import Notify from './Notify.svelte';
@@ -23,6 +23,8 @@
 	let message: string | null = null;
 	let minIntensity: number = 0;
 	let maxIntensity: number = 100;
+	let minFrequency: number = 100;
+	let maxFrequency: number = 3000;
 
 	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
@@ -32,7 +34,11 @@
 	};
 
 	const indexToFrequency = (index: number) => {
-		return (index * audioContext.sampleRate) / analyser.fftSize;
+		return minFrequency + (index * audioContext.sampleRate) / analyser.fftSize;
+	};
+
+	const frequencyToIndex = (frequency: number) => {
+		return Math.round(((frequency - minFrequency) * analyser.fftSize) / audioContext.sampleRate);
 	};
 
 	const restart = (): void => {
@@ -66,10 +72,8 @@
 			const source = audioContext.createMediaStreamSource(stream);
 			analyser = audioContext.createAnalyser();
 			source.connect(analyser);
-			analyser.fftSize = 2048;
+			analyser.fftSize = 4096;
 			analyser.smoothingTimeConstant = 0.8;
-			const bufferLength = analyser.frequencyBinCount;
-			dataArray = new Float32Array(bufferLength);
 			draw();
 		} catch (err) {
 			console.error('Error accessing audio stream:', err);
@@ -78,8 +82,11 @@
 
 	function draw(): void {
 		requestAnimationFrame(draw);
-		analyser.getFloatFrequencyData(dataArray);
-		dataArray = dataArray;
+		let fullDataArray = new Float32Array(analyser.frequencyBinCount);
+		analyser.getFloatFrequencyData(fullDataArray);
+		fullDataArray = harmonicProductSpectrum(fullDataArray, 3);
+		dataArray = fullDataArray.slice(frequencyToIndex(minFrequency), frequencyToIndex(maxFrequency))
+
 		// dataArray = smoothArray(dataArray);
 		// dataArray = smoothArray(dataArray);
 		// dataArray = smoothArray(dataArray);
@@ -123,6 +130,8 @@
 		detectedFrequency={dominantFrequency}
 		{minIntensity}
 		{maxIntensity}
+		{minFrequency}
+		{maxFrequency}
 	/>
 {:else}
 	<Button onClick={initAudio} text="Enable microphone" />
