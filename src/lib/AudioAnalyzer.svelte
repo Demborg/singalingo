@@ -33,12 +33,12 @@
 		return max_f / min_f < 1.06;
 	};
 
-	const indexToFrequency = (index: number) => {
+	const subIndexToFrequency = (index: number) => {
 		return minFrequency + (index * audioContext.sampleRate) / analyser.fftSize;
 	};
 
-	const frequencyToIndex = (frequency: number) => {
-		return Math.round(((frequency - minFrequency) * analyser.fftSize) / audioContext.sampleRate);
+	const frequencyToFullIndex = (frequency: number) => {
+		return Math.round((frequency * analyser.fftSize) / audioContext.sampleRate);
 	};
 
 	const restart = (): void => {
@@ -84,12 +84,9 @@
 		requestAnimationFrame(draw);
 		let fullDataArray = new Float32Array(analyser.frequencyBinCount);
 		analyser.getFloatFrequencyData(fullDataArray);
-		fullDataArray = harmonicProductSpectrum(fullDataArray, 3);
-		dataArray = fullDataArray.slice(frequencyToIndex(minFrequency), frequencyToIndex(maxFrequency))
+		fullDataArray = harmonicProductSpectrum(fullDataArray, 5);
+		dataArray = fullDataArray.slice(frequencyToFullIndex(minFrequency), frequencyToFullIndex(maxFrequency))
 
-		// dataArray = smoothArray(dataArray);
-		// dataArray = smoothArray(dataArray);
-		// dataArray = smoothArray(dataArray);
 		const medianIntensity = median(dataArray);
 		minIntensity = medianIntensity;
 		maxIntensity = Math.max(...dataArray);
@@ -98,7 +95,7 @@
 			return;
 		}
 		const dominantFrequencyIndex = dataArray.indexOf(maxIntensity);
-		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
+		dominantFrequency = subIndexToFrequency(dominantFrequencyIndex);
 
 		if (
 			isFrequencyClose(dominantFrequency, noteNameToFrequency(levels[level][current_note_index]))
@@ -126,7 +123,7 @@
 {#if analyser}
 	<AudioVisualizer
 		{dataArray}
-		{indexToFrequency}
+		indexToFrequency={subIndexToFrequency}
 		detectedFrequency={dominantFrequency}
 		{minIntensity}
 		{maxIntensity}
@@ -136,6 +133,7 @@
 {:else}
 	<Button onClick={initAudio} text="Enable microphone" />
 {/if}
+<p>{dominantFrequency}</p>
 
 <Notation
 	notes={levels[level]}
