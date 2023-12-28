@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { frequencyToNoteName, noteNameToFrequency, median } from './toneTools';
+	import {
+		frequencyToNoteName,
+		noteNameToFrequency,
+		median,
+		harmonicProductSpectrum
+	} from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 	import Notify from './Notify.svelte';
@@ -19,10 +24,12 @@
 	];
 	let level = 0;
 	let current_note_index = 0;
-	let timer_id: NodeJS.Timeout | null = null;
+	let timer_id: ReturnType<typeof setTimeout> | null = null;
 	let message: string | null = null;
 	let minIntensity: number = 0;
 	let maxIntensity: number = 100;
+	let minFrequency: number = 100;
+	let maxFrequency: number = 3000;
 
 	const isFrequencyClose = (a: number, b: number) => {
 		const max_f = Math.max(a, b);
@@ -31,8 +38,12 @@
 		return max_f / min_f < 1.06;
 	};
 
-	const indexToFrequency = (index: number) => {
-		return (index * audioContext.sampleRate) / analyser.fftSize;
+	const subIndexToFrequency = (index: number) => {
+		return minFrequency + (index * audioContext.sampleRate) / analyser.fftSize;
+	};
+
+	const frequencyToFullIndex = (frequency: number) => {
+		return Math.round((frequency * analyser.fftSize) / audioContext.sampleRate);
 	};
 
 	const restart = (): void => {
@@ -66,10 +77,8 @@
 			const source = audioContext.createMediaStreamSource(stream);
 			analyser = audioContext.createAnalyser();
 			source.connect(analyser);
-			analyser.fftSize = 2048;
+			analyser.fftSize = 4096;
 			analyser.smoothingTimeConstant = 0.8;
-			const bufferLength = analyser.frequencyBinCount;
-			dataArray = new Float32Array(bufferLength);
 			draw();
 		} catch (err) {
 			console.error('Error accessing audio stream:', err);
@@ -78,20 +87,23 @@
 
 	function draw(): void {
 		requestAnimationFrame(draw);
-		analyser.getFloatFrequencyData(dataArray);
-		dataArray = dataArray;
-		// dataArray = smoothArray(dataArray);
-		// dataArray = smoothArray(dataArray);
-		// dataArray = smoothArray(dataArray);
+		let fullDataArray = new Float32Array(analyser.frequencyBinCount);
+		analyser.getFloatFrequencyData(fullDataArray);
+		fullDataArray = harmonicProductSpectrum(fullDataArray, 5);
+		dataArray = fullDataArray.slice(
+			frequencyToFullIndex(minFrequency),
+			frequencyToFullIndex(maxFrequency)
+		);
+
 		const medianIntensity = median(dataArray);
-		minIntensity = medianIntensity;
 		maxIntensity = Math.max(...dataArray);
-		if (maxIntensity - minIntensity < Math.log2(10000000)) {
+		minIntensity = Math.min(...dataArray);
+		if (maxIntensity - medianIntensity < 40) {
 			dominantFrequency = null;
 			return;
 		}
 		const dominantFrequencyIndex = dataArray.indexOf(maxIntensity);
-		dominantFrequency = indexToFrequency(dominantFrequencyIndex);
+		dominantFrequency = subIndexToFrequency(dominantFrequencyIndex);
 
 		if (
 			isFrequencyClose(dominantFrequency, noteNameToFrequency(levels[level][current_note_index]))
@@ -119,10 +131,12 @@
 {#if analyser}
 	<AudioVisualizer
 		{dataArray}
-		{indexToFrequency}
+		indexToFrequency={subIndexToFrequency}
 		detectedFrequency={dominantFrequency}
 		{minIntensity}
 		{maxIntensity}
+		{minFrequency}
+		{maxFrequency}
 	/>
 {:else}
 	<Button onClick={initAudio} text="Enable microphone" />

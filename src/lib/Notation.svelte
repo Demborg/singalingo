@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { afterUpdate } from 'svelte';
-	import { Renderer, Stave, StaveNote, Voice, Formatter, Accidental, Stem, Beam } from 'vexflow';
+	import { Renderer, Stave, StaveNote, Voice, Formatter, Accidental } from 'vexflow';
 
 	export let notes: string[];
 	export let currentNoteIndex: number;
 	export let currentNote: string | null;
 
-	const renderNote = (note: string, stave: bool = true): StaveNote => {
+	const renderNote = (note: string, stave: boolean = true): StaveNote => {
 		let result = new StaveNote({
 			keys: [note],
 			duration: 'q'
@@ -17,7 +17,7 @@
 		}
 
 		if (!stave) {
-			result.setStave(new Stave());
+			result.setStave(new Stave(0, 0, 0));
 		}
 
 		return result;
@@ -41,7 +41,7 @@
 		// Add a clef and time signature.
 		stave.addClef('treble').addTimeSignature('4/4');
 
-		let rendered_notes = notes.map(renderNote);
+		let rendered_notes = notes.map((note: string) => renderNote(note));
 		for (let i = 0; i < currentNoteIndex; i++) {
 			rendered_notes[i].setStyle({ fillStyle: 'green' });
 		}

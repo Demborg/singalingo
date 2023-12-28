@@ -28,7 +28,7 @@ export function noteNameToFrequency(noteName: string): number {
 }
 
 export function smoothArray(dataArray: Uint8Array): Uint8Array {
-	let smoothedArray = new Uint8Array(dataArray.length);
+	const smoothedArray = new Uint8Array(dataArray.length);
 	for (let i = 1; i < dataArray.length - 1; i++) {
 		smoothedArray[i] = (dataArray[i - 1] + dataArray[i] + dataArray[i + 1]) / 3;
 	}
@@ -38,7 +38,7 @@ export function smoothArray(dataArray: Uint8Array): Uint8Array {
 }
 
 export function findPeaks(dataArray: Uint8Array, threshold: number): number[] {
-	let peaks = [];
+	const peaks = [];
 
 	for (let i = 1; i < dataArray.length - 1; i++) {
 		if (
@@ -55,4 +55,18 @@ export function findPeaks(dataArray: Uint8Array, threshold: number): number[] {
 export function median(dataArray: Float32Array): number {
 	const sortedValues = [...dataArray].sort((a, b) => a - b);
 	return sortedValues[Math.floor(dataArray.length / 2)];
+}
+
+export function harmonicProductSpectrum(
+	dataArray: Float32Array,
+	harmonics: number = 5
+): Float32Array {
+	const harmonicSpectra = new Float32Array(dataArray.length);
+
+	for (let i = 0; i < dataArray.length; i++) {
+		for (let j = 1; j <= harmonics && i * j < dataArray.length; j++) {
+			harmonicSpectra[i] += dataArray[i * j] / j;
+		}
+	}
+	return harmonicSpectra;
 }
