@@ -17,7 +17,9 @@
 		for (let i = 0; i < dataArray.length; i++) {
 			const frequency = indexToFrequency(i);
 			const y: number =
-				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) * (height - 2* offsetY) + offsetY;
+				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) *
+					(height - 2 * offsetY) +
+				offsetY;
 			const x = frequencyToX(frequency, width);
 
 			if (i === 0) {
@@ -28,14 +30,8 @@
 		}
 		if (detectedFrequency) {
 			const x = frequencyToX(detectedFrequency, width);
-			ctx.moveTo(x, 5)
-			ctx.arc(
-				x,
-				offsetY,
-				5,
-				0,
-				2 * Math.PI
-			);
+			ctx.moveTo(x, 5);
+			ctx.arc(x, offsetY, 5, 0, 2 * Math.PI);
 		}
 	}
 
@@ -47,29 +43,28 @@
 		if (!canvas) return;
 		const canvasContext = canvas.getContext('2d');
 		if (!canvasContext) return;
-		canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+		canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-		let tmpCanvas = document.createElement('canvas')
+		let tmpCanvas = document.createElement('canvas');
 		tmpCanvas.width = canvas.width;
 		tmpCanvas.height = canvas.height;
-		let tmpCtx = tmpCanvas.getContext("2d")
+		let tmpCtx = tmpCanvas.getContext('2d');
 		if (!tmpCtx) return;
-		tmpCtx.beginPath()
+		tmpCtx.beginPath();
 		draw(tmpCtx, canvas.height, canvas.width);
 		tmpCtx.lineWidth = 5;
-		tmpCtx.strokeStyle = 'rgb(0, 200, 0)'
-		tmpCtx.stroke()
-		tmpCtx.filter = 'blur(5px)'
+		tmpCtx.strokeStyle = 'rgb(0, 200, 0)';
+		tmpCtx.stroke();
+		tmpCtx.filter = 'blur(5px)';
 
-		tmpCtx.drawImage(tmpCanvas, 0, 0)
-		canvasContext.drawImage(tmpCanvas, 0, 0)
+		tmpCtx.drawImage(tmpCanvas, 0, 0);
+		canvasContext.drawImage(tmpCanvas, 0, 0);
 
 		canvasContext.lineWidth = 5;
 		canvasContext.strokeStyle = 'rgb(255, 255, 255)';
 		canvasContext.beginPath();
 		draw(canvasContext, canvas.height, canvas.width);
 		canvasContext.stroke();
-
 	});
 </script>
 

@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { frequencyToNoteName, noteNameToFrequency, median, harmonicProductSpectrum } from './toneTools';
+	import {
+		frequencyToNoteName,
+		noteNameToFrequency,
+		median,
+		harmonicProductSpectrum
+	} from './toneTools';
 	import Notation from './Notation.svelte';
 	import AudioVisualizer from './AudioVisualizer.svelte';
 	import Notify from './Notify.svelte';
@@ -19,7 +24,7 @@
 	];
 	let level = 0;
 	let current_note_index = 0;
-	let timer_id: NodeJS.Timeout | null = null;
+	let timer_id: ReturnType<typeof setTimeout> | null = null;
 	let message: string | null = null;
 	let minIntensity: number = 0;
 	let maxIntensity: number = 100;
@@ -85,7 +90,10 @@
 		let fullDataArray = new Float32Array(analyser.frequencyBinCount);
 		analyser.getFloatFrequencyData(fullDataArray);
 		fullDataArray = harmonicProductSpectrum(fullDataArray, 5);
-		dataArray = fullDataArray.slice(frequencyToFullIndex(minFrequency), frequencyToFullIndex(maxFrequency))
+		dataArray = fullDataArray.slice(
+			frequencyToFullIndex(minFrequency),
+			frequencyToFullIndex(maxFrequency)
+		);
 
 		const medianIntensity = median(dataArray);
 		maxIntensity = Math.max(...dataArray);
