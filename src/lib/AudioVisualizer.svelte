@@ -7,10 +7,37 @@
 	export let detectedFrequency: number | null = null;
 	export let minIntensity: number;
 	export let maxIntensity: number;
+	const offsetY = 10;
 
 	const frequencyToX = (f: number, width: number): number => {
 		return (Math.log2(f / minFrequency) / Math.log2(maxFrequency / minFrequency)) * width;
 	};
+
+	function draw(ctx: CanvasRenderingContext2D, height: number, width: number) {
+		for (let i = 0; i < dataArray.length; i++) {
+			const frequency = indexToFrequency(i);
+			const y: number =
+				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) * (height - 2* offsetY) + offsetY;
+			const x = frequencyToX(frequency, width);
+
+			if (i === 0) {
+				ctx.moveTo(x, y);
+			} else {
+				ctx.lineTo(x, y);
+			}
+		}
+		if (detectedFrequency) {
+			const x = frequencyToX(detectedFrequency, width);
+			ctx.moveTo(x, 5)
+			ctx.arc(
+				x,
+				offsetY,
+				5,
+				0,
+				2 * Math.PI
+			);
+		}
+	}
 
 	afterUpdate(() => {
 		if (!dataArray) return;
@@ -20,51 +47,29 @@
 		if (!canvas) return;
 		const canvasContext = canvas.getContext('2d');
 		if (!canvasContext) return;
+		canvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
-		canvasContext.fillStyle = 'rgb(200, 200, 200)';
-		canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+		let tmpCanvas = document.createElement('canvas')
+		tmpCanvas.width = canvas.width;
+		tmpCanvas.height = canvas.height;
+		let tmpCtx = tmpCanvas.getContext("2d")
+		if (!tmpCtx) return;
+		tmpCtx.beginPath()
+		draw(tmpCtx, canvas.height, canvas.width);
+		tmpCtx.lineWidth = 5;
+		tmpCtx.strokeStyle = 'rgb(0, 200, 0)'
+		tmpCtx.stroke()
+		tmpCtx.filter = 'blur(5px)'
 
-		canvasContext.lineWidth = 2;
-		canvasContext.strokeStyle = 'rgb(0, 0, 0)';
+		tmpCtx.drawImage(tmpCanvas, 0, 0)
+		canvasContext.drawImage(tmpCanvas, 0, 0)
+
+		canvasContext.lineWidth = 5;
+		canvasContext.strokeStyle = 'rgb(255, 255, 255)';
 		canvasContext.beginPath();
-		let detectedY: number = 0;
-		let closestF: number = 0;
-
-		for (let i = 0; i < dataArray.length; i++) {
-			const frequency = indexToFrequency(i);
-			const y: number =
-				(1 - (dataArray[i] - minIntensity) / (maxIntensity - minIntensity)) * canvas.height;
-			if (
-				detectedFrequency &&
-				Math.abs(detectedFrequency - closestF) > Math.abs(detectedFrequency - frequency)
-			) {
-				detectedY = y;
-				closestF = frequency;
-			}
-			const x = frequencyToX(frequency, canvas.width);
-
-			if (i === 0) {
-				canvasContext.moveTo(x, y);
-			} else {
-				canvasContext.lineTo(x, y);
-			}
-		}
-
-		canvasContext.lineTo(canvas.width, canvas.height / 2);
+		draw(canvasContext, canvas.height, canvas.width);
 		canvasContext.stroke();
 
-		canvasContext.beginPath();
-		if (detectedFrequency) {
-			canvasContext.arc(
-				frequencyToX(detectedFrequency, canvas.width),
-				detectedY,
-				5,
-				0,
-				2 * Math.PI
-			);
-		}
-		canvasContext.fillStyle = 'rgb(0, 0, 0)';
-		canvasContext.fill();
 	});
 </script>
 
@@ -74,5 +79,7 @@
 	.visualizer {
 		width: 100%;
 		max-width: 500px;
+		border: 1px solid darkgray;
+		border-radius: 10px;
 	}
 </style>

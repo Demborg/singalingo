@@ -88,9 +88,9 @@
 		dataArray = fullDataArray.slice(frequencyToFullIndex(minFrequency), frequencyToFullIndex(maxFrequency))
 
 		const medianIntensity = median(dataArray);
-		minIntensity = medianIntensity;
 		maxIntensity = Math.max(...dataArray);
-		if (maxIntensity - minIntensity < Math.log2(10000000)) {
+		minIntensity = Math.min(...dataArray);
+		if (maxIntensity - medianIntensity < 40) {
 			dominantFrequency = null;
 			return;
 		}
@@ -133,7 +133,6 @@
 {:else}
 	<Button onClick={initAudio} text="Enable microphone" />
 {/if}
-<p>{dominantFrequency}</p>
 
 <Notation
 	notes={levels[level]}

@@ -62,7 +62,7 @@ export function harmonicProductSpectrum(dataArray: Float32Array, harmonics: numb
 
 	for (let i = 0; i < dataArray.length; i++) {
 		for (let j = 1; j <= harmonics && i * j < dataArray.length; j++) {
-			harmonicSpectra[i] += dataArray[i * j];
+			harmonicSpectra[i] += dataArray[i * j] / j;
 		}
 	}
 	return harmonicSpectra
